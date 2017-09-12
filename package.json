@@ -1,0 +1,10 @@
+{
+  "name": "simple-json-logger",
+  "version": "1.0.0",
+  "description": "simple json logger",
+  "main": "index.js",
+  "keywords": ["json", "logger"],
+  "author": "zhaoyao91 <zhaoyao91@163.com>",
+  "repository": "https://github.com/zhaoyao91/simple-json-logger.git",
+  "license": "MIT"
+}
