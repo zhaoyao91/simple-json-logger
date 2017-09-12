@@ -1,3 +1,5 @@
+const {LOG_LEVEL = 30} = process.env
+
 module.exports = {
   fatal: buildLogFunc(60, console.error.bind(console)),
   error: buildLogFunc(50, console.error.bind(console)),
@@ -8,7 +10,8 @@ module.exports = {
 }
 
 function buildLogFunc (level, log, mapOutput) {
-  return function (...args) {
+  if (level < LOG_LEVEL) return () => {}
+  else return function (...args) {
     let output = {level}
 
     // logger.xxx(msg)

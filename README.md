@@ -25,6 +25,9 @@ logger.info('hello world') // {"level": "30", "message": "hello world"}
 - debug 20
 - trace 10
 
+You can set environment `LOG_LEVEL` to some number. Only logs of levels equal or larger than `LOG_LEVEL` will
+be output.
+
 ## API Styles
 
 - `logger.xxx(message)`
