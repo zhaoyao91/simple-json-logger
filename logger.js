@@ -1,25 +1,15 @@
-const logMethods = {
-  '60': console.error.bind(console),
-  '50': console.error.bind(console),
-  '40': console.warn.bind(console),
-  '30': console.info.bind(console),
-  '20': console.debug.bind(console),
-  '10': console.trace.bind(console),
-}
-
 module.exports = {
-  fatal: buildLogFunc(60),
-  error: buildLogFunc(50),
-  warn: buildLogFunc(40),
-  info: buildLogFunc(30),
-  debug: buildLogFunc(20),
-  trace: buildLogFunc(10)
+  fatal: buildLogFunc(60, console.error.bind(console)),
+  error: buildLogFunc(50, console.error.bind(console)),
+  warn: buildLogFunc(40, console.error.bind(console)),
+  info: buildLogFunc(30, console.info.bind(console)),
+  debug: buildLogFunc(20, console.info.bind(console)),
+  trace: buildLogFunc(10, console.info.bind(console), addTrace)
 }
 
-function buildLogFunc (level) {
-  const log = logMethods[level]
+function buildLogFunc (level, log, mapOutput) {
   return function (...args) {
-    const output = {level}
+    let output = {level}
 
     // logger.xxx(msg)
     if (args.length === 1 && typeof args[0] === 'string') {
@@ -54,6 +44,8 @@ function buildLogFunc (level) {
       output.unknown = args
     }
 
+    if (mapOutput) output = mapOutput(output)
+
     log(JSON.stringify(output))
   }
 }
@@ -64,4 +56,10 @@ function formatError (err) {
     message: err.message,
     stack: err.stack,
   }, err)
+}
+
+function addTrace (output) {
+  const lines = (new Error()).stack.split('\n')
+  output.trace = ['Trace'].concat(lines.slice(3)).join('\n')
+  return output
 }
