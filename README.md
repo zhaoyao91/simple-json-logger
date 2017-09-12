@@ -13,7 +13,7 @@ Import and use:
 ```
 const logger = require('simple-json-logger')
 
-logger.info('hello world') // {"level": "30", "msg": "hello world"}
+logger.info('hello world') // {"level": "30", "message": "hello world"}
 ```
 
 ## Levels
@@ -27,16 +27,16 @@ logger.info('hello world') // {"level": "30", "msg": "hello world"}
 
 ## API Styles
 
-- `logger.xxx(msg)`
-- `logger.xxx(msg, more)`
+- `logger.xxx(message)`
+- `logger.xxx(message, details)`
 - `logger.xxx(error)`
-- `logger.xxx(error, msg)`
-- `logger.xxx(error, msg, more)`
+- `logger.xxx(error, message)`
+- `logger.xxx(error, message, details)`
 
 Note:
 
-- `msg` is a string which goes into `msg` field
-- `more` is an object which goes into `more` field
+- `message` is a string which goes into `message` field
+- `details` is an object which goes into `details` field
 - `error` is an instance of `Error` which goes into `error` field
 
 ## License
