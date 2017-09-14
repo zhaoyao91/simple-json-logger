@@ -13,26 +13,35 @@ function buildLogFunc (level, log, mapOutput) {
 
     let output = {level}
 
-    // logger.xxx(msg)
-    if (args.length === 1 && typeof args[0] === 'string') {
+    // logger.xxx(details)
+    if (args.length === 1 && isDetails(args[0])) {
+      output.details = args[0]
+    }
+    // logger.xxx(message)
+    else if (args.length === 1 && isMessage(args[0])) {
       output.message = args[0]
     }
-    // logger.xxx(msg, more)
-    else if (args.length === 2 && typeof args[0] === 'string' && typeof args[1] === 'object') {
+    // logger.xxx(message, details)
+    else if (args.length === 2 && isMessage(args[0]) && isDetails(args[1])) {
       output.message = args[0]
       output.details = args[1]
     }
     // logger.xxx(error)
-    else if (args.length === 1 && args[0] instanceof Error) {
+    else if (args.length === 1 && isError(args[0])) {
       output.error = formatError(args[0])
     }
-    // logger.xxx(error, msg)
-    else if (args.length === 2 && args[0] instanceof Error && typeof args[1] === 'string') {
+    // logger.xxx(error, message)
+    else if (args.length === 2 && isError(args[0]) && isMessage(args[1])) {
       output.error = formatError(args[0])
       output.message = args[1]
     }
-    // logger.xxx(error, msg, more)
-    else if (args.length === 3 && args[0] instanceof Error && typeof args[1] === 'string' && typeof args[2] === 'object') {
+    // logger.xxx(error, details)
+    else if (args.length === 2 && isError(args[0]) && isDetails(args[1])) {
+      output.error = formatError(args[0])
+      output.details = args[1]
+    }
+    // logger.xxx(error, message, details)
+    else if (args.length === 3 && isError(args[0]) && isMessage(args[1]) && isDetails(args[2])) {
       output.error = formatError(args[0])
       output.message = args[1]
       output.details = args[2]
@@ -64,4 +73,18 @@ function addTrace (output) {
   const lines = (new Error()).stack.split('\n')
   output.trace = ['Trace'].concat(lines.slice(3)).join('\n')
   return output
+}
+
+function isMessage (arg) {
+  return typeof arg === 'string'
+}
+
+function isError (arg) {
+  return arg instanceof Error
+}
+
+function isDetails (arg) {
+  return typeof arg === 'object'
+    && arg !== null
+    && !isError(arg)
 }

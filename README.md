@@ -30,10 +30,12 @@ be output.
 
 ## API Styles
 
+- `logger.xxx(details)`
 - `logger.xxx(message)`
 - `logger.xxx(message, details)`
 - `logger.xxx(error)`
 - `logger.xxx(error, message)`
+- `logger.xxx(error, details)`
 - `logger.xxx(error, message, details)`
 
 Note:
