@@ -6,7 +6,7 @@ Simple json logger.
 
 Install package:
 
-`npm install --save simpe-json-logger`
+`npm install --save simple-json-logger`
 
 Import and use:
 
