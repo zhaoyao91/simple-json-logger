@@ -28,18 +28,18 @@ logger.error(new TypeError('invalid arg'))
 `xxx` could be any of [levels](#levels).
 
 - `logger.xxx(details)`
-- `logger.xxx(message)`
-- `logger.xxx(message, details)`
+- `logger.xxx(...messages)`
+- `logger.xxx(...messages, details)`
 - `logger.xxx(error)`
-- `logger.xxx(error, message)`
+- `logger.xxx(error, ...messages)`
 - `logger.xxx(error, details)`
-- `logger.xxx(error, message, details)`
+- `logger.xxx(error, ...messages, details)`
 
 You can remember args order as **EMD**.
 
 Note:
 
-- `message` is a string which goes into `message` field.
+- `messages` is a spread list of strings which will be joined into `message` field.
 - `details` is an object which goes into `details` field.
 - `error` is an instance of `Error` which goes into `error` field.
 

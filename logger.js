@@ -12,6 +12,7 @@ function buildLogFunc (level, log, mapOutput) {
     if (level < (process.env.LOG_LEVEL || 30)) return
 
     let output = {level}
+    args = joinStrings(args)
 
     // logger.xxx(details)
     if (args.length === 1 && isDetails(args[0])) {
@@ -59,6 +60,19 @@ function buildLogFunc (level, log, mapOutput) {
 
     log(JSON.stringify(output))
   }
+}
+
+function joinStrings (args) {
+  return args.reduce((results, arg) => {
+    const lastArg = results[results.length - 1]
+    if (typeof lastArg === 'string' && typeof arg === 'string') {
+      results[results.length - 1] = lastArg.concat(' ', arg)
+    }
+    else {
+      results.push(arg)
+    }
+    return results
+  }, [])
 }
 
 function formatError (err) {
