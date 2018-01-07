@@ -1,3 +1,5 @@
+const circularJSON = require('circular-json')
+
 module.exports = {
   fatal: buildLogFunc(60, console.error.bind(console)),
   error: buildLogFunc(50, console.error.bind(console)),
@@ -58,7 +60,7 @@ function buildLogFunc (level, log, mapOutput) {
 
     if (mapOutput) output = mapOutput(output)
 
-    log(JSON.stringify(output))
+    log(circularJSON.stringify(output))
   }
 }
 
