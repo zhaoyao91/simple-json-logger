@@ -17,31 +17,25 @@ logger.info('hello world')
 // {"level": 30, "message": "hello world"}
 
 logger.warn('some user is invalid', {name: 'Bob', age: 20})
-// {"level": 40, "message": "some user is invalid", "details": {"name": "Bob", "age": 20}}
+// {"level": 40, "message": "some user is invalid", "detail": {"name": "Bob", "age": 20}}
 
 logger.error(new TypeError('invalid arg'))
 // {"level": 50, "error": {"name": "TypeError", "message": "invalid arg", "stack": ...}}
 ```
 
-## API Styles
+## API
 
 `xxx` could be any of [levels](#levels).
 
-- `logger.xxx(details)`
-- `logger.xxx(...messages)`
-- `logger.xxx(...messages, details)`
-- `logger.xxx(error)`
-- `logger.xxx(error, ...messages)`
-- `logger.xxx(error, details)`
-- `logger.xxx(error, ...messages, details)`
-
-You can remember args order as **EMD**.
+- `logger.xxx([...errors], [...messages], [...details])`
 
 Note:
 
-- `messages` is a spread list of strings which will be joined into `message` field.
-- `details` is an object which goes into `details` field.
-- `error` is an instance of `Error` which goes into `error` field.
+- an `error` is an instance of `Error`; a `detail` is an object; a `message` is any primitive value;
+- there is no limit for order of args
+- for each type:
+  - if there is only one arg, it is put in `error`, `message` or `detail` filed
+  - if there are more than one args, they are put in an array of `errors`, `messages` or `details` field
 
 ## Levels
 
@@ -59,6 +53,11 @@ be output. The default value is 30.
 - `fatal`, `error`, `warn` logs will be output to stderr.
 - `info`, `debug`, `trace` logs will be output to stdout.
 - `trace` logs have an extra field `trace` which is the trace stack string.
+
+## Env
+
+- LOG_LEVEL - print log only if level >= LOG_LEVEL
+- LOG_PRETTY - if present, the print log with pretty format
 
 ## License
 

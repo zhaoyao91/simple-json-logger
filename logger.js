@@ -9,79 +9,59 @@ module.exports = {
   trace: buildLogFunc(10, console.info.bind(console), addTrace)
 }
 
+const {
+  LOG_LEVEL,
+  LOG_PRETTY,
+} = process.env
+
 function buildLogFunc (level, log, mapOutput) {
   return function (...args) {
-    if (level < (process.env.LOG_LEVEL || 30)) return
+    if (level < (LOG_LEVEL || 30)) return
 
-    let output = {level}
-    args = joinStrings(args)
-
-    // logger.xxx(details)
-    if (args.length === 1 && isDetails(args[0])) {
-      output.details = args[0]
-    }
-    // logger.xxx(message)
-    else if (args.length === 1 && isMessage(args[0])) {
-      output.message = args[0]
-    }
-    // logger.xxx(message, details)
-    else if (args.length === 2 && isMessage(args[0]) && isDetails(args[1])) {
-      output.message = args[0]
-      output.details = args[1]
-    }
-    // logger.xxx(error)
-    else if (args.length === 1 && isError(args[0])) {
-      output.error = formatError(args[0])
-    }
-    // logger.xxx(error, message)
-    else if (args.length === 2 && isError(args[0]) && isMessage(args[1])) {
-      output.error = formatError(args[0])
-      output.message = args[1]
-    }
-    // logger.xxx(error, details)
-    else if (args.length === 2 && isError(args[0]) && isDetails(args[1])) {
-      output.error = formatError(args[0])
-      output.details = args[1]
-    }
-    // logger.xxx(error, message, details)
-    else if (args.length === 3 && isError(args[0]) && isMessage(args[1]) && isDetails(args[2])) {
-      output.error = formatError(args[0])
-      output.message = args[1]
-      output.details = args[2]
-    }
-    // empty args
-    else if (!args || args.length === 0) {
-
-    }
-    // unknown format
-    else {
-      output.unknown = args
-    }
-
+    let output = Object.assign(
+      {level},
+      ...fieldsBuilders.map(buildFields => buildFields(args))
+    )
     if (mapOutput) output = mapOutput(output)
+    output = formatOutput(output)
 
-    log(circularJSON.stringify(output))
+    log(output)
   }
 }
 
-function joinStrings (args) {
-  return args.reduce((results, arg) => {
-    const lastArg = results[results.length - 1]
-    if (typeof lastArg === 'string' && typeof arg === 'string') {
-      results[results.length - 1] = lastArg.concat(' ', arg)
-    }
-    else {
-      results.push(arg)
-    }
-    return results
-  }, [])
+function formatOutput (output) {
+  if (!LOG_PRETTY) return circularJSON.stringify(output)
+  else return circularJSON.stringify(output, null, 2)
 }
+
+const fieldsBuilders = [
+  function buildMessage (args) {
+    const messages = args.filter(isMessage)
+    if (messages.length === 0) return {}
+    else if (messages.length === 1) return {message: messages[0]}
+    else return {messages}
+  },
+
+  function buildError (args) {
+    const errors = args.filter(isError).map(formatError)
+    if (errors.length === 0) return {}
+    else if (errors.length === 1) return {error: errors[0]}
+    else return {errors}
+  },
+
+  function buildDetail (args) {
+    const details = args.filter(isDetail)
+    if (details.length === 0) return {}
+    else if (details.length === 1) return {detail: details[0]}
+    else return {details}
+  }
+]
 
 function formatError (err) {
   return Object.assign({
     name: err.name,
     message: err.message,
-    stack: err.stack,
+    stack: err.stack.split('\n').map(str => str.trim()),
   }, err)
 }
 
@@ -92,14 +72,14 @@ function addTrace (output) {
 }
 
 function isMessage (arg) {
-  return typeof arg === 'string'
+  return !isError(arg) && !isDetail(arg)
 }
 
 function isError (arg) {
   return arg instanceof Error
 }
 
-function isDetails (arg) {
+function isDetail (arg) {
   return typeof arg === 'object'
     && arg !== null
     && !isError(arg)
