@@ -14,7 +14,7 @@ module.exports = {
   trace: buildLogFunc(10, console.info.bind(console), addTrace)
 }
 
-function buildLogFunc (level, log, mapOutput) {
+function buildLogFunc (level, log, modifyOutput) {
   if (level < LOG_LEVEL) return emptyFunction
 
   return function (...args) {
@@ -22,7 +22,7 @@ function buildLogFunc (level, log, mapOutput) {
       {level},
       ...fieldsBuilders.map(buildFields => buildFields(args))
     )
-    if (mapOutput) output = mapOutput(output)
+    if (modifyOutput) modifyOutput(output)
     output = formatOutput(output)
 
     log(output)
@@ -68,7 +68,6 @@ function formatError (err) {
 function addTrace (output) {
   const lines = (new Error()).stack.split('\n')
   output.trace = ['Trace'].concat(lines.slice(3)).join('\n')
-  return output
 }
 
 function isMessage (arg) {
