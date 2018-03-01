@@ -1,6 +1,8 @@
-# Simple Json Logger
+# Simple JSON Logger
 
-Simple json logger.
+Simple JSON logger.
+
+Just convert your logs into JSON format and add necessary fields (in fact, only level). 
 
 ## Usage
 
