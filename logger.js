@@ -14,24 +14,23 @@ module.exports = {
   trace: buildLogFunc(10, console.info.bind(console), addTrace)
 }
 
-function buildLogFunc (level, log, modifyOutput) {
-  if (level < LOG_LEVEL) return emptyFunction
+function buildLogFunc (level, log, modifyOutput = emptyFunc) {
+  if (level < LOG_LEVEL) return emptyFunc
+
+  const formatOutput = !!LOG_PRETTY
+    ? (output) => circularJSON.stringify(output)
+    : (output) => circularJSON.stringify(output, null, 2)
 
   return function (...args) {
     let output = Object.assign(
       {level},
       ...fieldsBuilders.map(buildFields => buildFields(args))
     )
-    if (modifyOutput) modifyOutput(output)
+    modifyOutput(output)
     output = formatOutput(output)
 
     log(output)
   }
-}
-
-function formatOutput (output) {
-  if (!LOG_PRETTY) return circularJSON.stringify(output)
-  else return circularJSON.stringify(output, null, 2)
 }
 
 const fieldsBuilders = [
@@ -87,4 +86,4 @@ function isDetail (arg) {
     && !isError(arg)
 }
 
-function emptyFunction () {}
+function emptyFunc () {}
