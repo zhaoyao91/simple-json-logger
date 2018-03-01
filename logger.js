@@ -1,5 +1,10 @@
 const circularJSON = require('circular-json')
 
+const {
+  LOG_LEVEL = '30',
+  LOG_PRETTY,
+} = process.env
+
 module.exports = {
   fatal: buildLogFunc(60, console.error.bind(console)),
   error: buildLogFunc(50, console.error.bind(console)),
@@ -9,15 +14,10 @@ module.exports = {
   trace: buildLogFunc(10, console.info.bind(console), addTrace)
 }
 
-const {
-  LOG_LEVEL,
-  LOG_PRETTY,
-} = process.env
-
 function buildLogFunc (level, log, mapOutput) {
-  return function (...args) {
-    if (level < (LOG_LEVEL || 30)) return
+  if (level < LOG_LEVEL) return emptyFunction
 
+  return function (...args) {
     let output = Object.assign(
       {level},
       ...fieldsBuilders.map(buildFields => buildFields(args))
@@ -84,3 +84,5 @@ function isDetail (arg) {
     && arg !== null
     && !isError(arg)
 }
+
+function emptyFunction () {}
