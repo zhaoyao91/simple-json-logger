@@ -5,12 +5,15 @@ const {
   LOG_PRETTY,
 } = process.env
 
+const stdout = console.log.bind(console)
+const stderr = console.error.bind(console)
+
 module.exports = {
-  error: buildLogFunc(50, console.error.bind(console)),
-  warn: buildLogFunc(40, console.error.bind(console)),
-  info: buildLogFunc(30, console.info.bind(console)),
-  debug: buildLogFunc(20, console.info.bind(console)),
-  trace: buildLogFunc(10, console.info.bind(console), addTrace)
+  error: buildLogFunc(50, stderr),
+  warn: buildLogFunc(40, stderr),
+  info: buildLogFunc(30, stdout),
+  debug: buildLogFunc(20, stdout),
+  trace: buildLogFunc(10, stderr, addTrace)
 }
 
 function buildLogFunc (level, log, modifyOutput = emptyFunc) {
