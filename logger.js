@@ -21,8 +21,8 @@ function buildLogFunc (level, log, modifyOutput = emptyFunc) {
   if (level < LOG_LEVEL) return emptyFunc
 
   const formatOutput = !!LOG_PRETTY
-    ? (output) => circularJSON.stringify(output)
-    : (output) => circularJSON.stringify(output, null, 2)
+    ? (output) => circularJSON.stringify(output, null, 2)
+    : (output) => circularJSON.stringify(output)
 
   return function (...args) {
     const output = {level}
