@@ -61,13 +61,16 @@ function formatError (err) {
   return Object.assign({
     name: err.name,
     message: err.message,
-    stack: err.stack.split('\n').map(str => str.trim()),
+    stack: err.stack.split('\n').map(trim),
   }, err)
 }
 
 function addTrace (output) {
-  const lines = (new Error()).stack.split('\n')
-  output.trace = ['Trace'].concat(lines.slice(3)).join('\n')
+  output.trace = (new Error()).stack.split('\n').slice(3).map(trim)
+}
+
+function trim (str) {
+  return str.trim()
 }
 
 function isMessage (arg) {
