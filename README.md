@@ -15,7 +15,7 @@ Import and use:
 ```
 const logger = require('simple-json-logger')
 
-logger.info('hello world') 
+logger.log('hello world') 
 // {"level": 30, "message": "hello world"}
 
 logger.warn('some user is invalid', {name: 'Bob', age: 20})
@@ -27,38 +27,41 @@ logger.error(new TypeError('invalid arg'))
 
 ## API
 
-`xxx` could be any of [levels](#levels).
+### logger.xxx
 
-- `logger.xxx([...errors], [...messages], [...details])`
+`xxx` could be anyone of [levels](#levels).
 
-Note:
+`(...args) => void`
 
-- an `error` is an instance of `Error`; a `detail` is an object; a `message` is any primitive value;
-- there is no limit for order of args
-- for each type:
+Notes:
+
+- there could be any number or args
+- each arg will be classified either as `error`, `message` or `detail`
+  - if arg is instance of `Error`, then it is treated as `error`
+  - if arg is type of `object` but is not `null`, then it is treated as `detail`
+  - otherwise, the arg is treated as `message`
+- for each arg type:
   - if there is only one arg, it is put in `error`, `message` or `detail` filed
   - if there are more than one args, they are put in an array of `errors`, `messages` or `details` field
 
 ## Levels
 
-- `error`   50
-- `warn`    40
-- `info`    30
-- `debug`   20
-- `trace`   10
+- `error` - 50
+- `warn` - 40
+- `info` or `log` - 30
+- `debug` - 20
+- `trace` - 10
 
-Note:
+Notes:
 
-- You can set environment `LOG_LEVEL` to some number. Only logs of levels equal or larger than `LOG_LEVEL` will
-be output. The default value is 30.
 - `error`, `warn`, `trace` logs will be output to stderr.
 - `info`, `debug` logs will be output to stdout.
 - `trace` logs have an extra field `trace` which is a string array of the trace stack.
 
 ## Env
 
-- LOG_LEVEL - print log only if level >= LOG_LEVEL
-- LOG_PRETTY - if present, the print log with pretty format
+- LOG_LEVEL - print log only if level >= LOG_LEVEL. default to 30.
+- LOG_PRETTY - if truthy, then print log with pretty format.
 
 ## License
 

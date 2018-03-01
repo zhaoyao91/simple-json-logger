@@ -12,6 +12,7 @@ module.exports = {
   error: buildLogFunc(50, stderr),
   warn: buildLogFunc(40, stderr),
   info: buildLogFunc(30, stdout),
+  log: buildLogFunc(30, stdout),
   debug: buildLogFunc(20, stdout),
   trace: buildLogFunc(10, stderr, addTrace)
 }
@@ -55,11 +56,12 @@ function attachArgs (singular, plural, args, output) {
 }
 
 function formatError (err) {
-  return Object.assign({
+  return {
+    ...err,
     name: err.name,
     message: err.message,
     stack: err.stack.split('\n').map(trim),
-  }, err)
+  }
 }
 
 function addTrace (output) {
