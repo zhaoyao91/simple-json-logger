@@ -41,7 +41,6 @@ Note:
 
 ## Levels
 
-- `fatal`   60
 - `error`   50
 - `warn`    40
 - `info`    30
@@ -52,7 +51,7 @@ Note:
 
 - You can set environment `LOG_LEVEL` to some number. Only logs of levels equal or larger than `LOG_LEVEL` will
 be output. The default value is 30.
-- `fatal`, `error`, `warn` logs will be output to stderr.
+- `error`, `warn` logs will be output to stderr.
 - `info`, `debug`, `trace` logs will be output to stdout.
 - `trace` logs have an extra field `trace` which is the trace stack string.
 

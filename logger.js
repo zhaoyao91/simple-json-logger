@@ -6,7 +6,6 @@ const {
 } = process.env
 
 module.exports = {
-  fatal: buildLogFunc(60, console.error.bind(console)),
   error: buildLogFunc(50, console.error.bind(console)),
   warn: buildLogFunc(40, console.error.bind(console)),
   info: buildLogFunc(30, console.info.bind(console)),
