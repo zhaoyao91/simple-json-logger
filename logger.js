@@ -22,39 +22,35 @@ function buildLogFunc (level, log, modifyOutput = emptyFunc) {
     : (output) => circularJSON.stringify(output, null, 2)
 
   return function (...args) {
-    let output = Object.assign(
-      {level},
-      ...fieldsBuilders.map(buildFields => buildFields(args))
-    )
-    modifyOutput(output)
-    output = formatOutput(output)
+    const output = {level}
 
-    log(output)
+    const [errors, messages, details] = classifyArgs(args)
+
+    attachArgs('error', 'errors', errors.map(formatError), output)
+    attachArgs('message', 'messages', messages, output)
+    attachArgs('detail', 'details', details, output)
+
+    modifyOutput(output)
+
+    log(formatOutput(output))
   }
 }
 
-const fieldsBuilders = [
-  function buildMessage (args) {
-    const messages = args.filter(isMessage)
-    if (messages.length === 0) return {}
-    else if (messages.length === 1) return {message: messages[0]}
-    else return {messages}
-  },
+function classifyArgs (args) {
+  // errors, messages, details
+  const result = [[], [], []]
+  args.forEach(arg => {
+    if (arg instanceof Error) result[0].push(arg)
+    else if (typeof arg === 'object' && arg !== null) result[2].push(arg)
+    else result[1].push(arg)
+  })
+  return result
+}
 
-  function buildError (args) {
-    const errors = args.filter(isError).map(formatError)
-    if (errors.length === 0) return {}
-    else if (errors.length === 1) return {error: errors[0]}
-    else return {errors}
-  },
-
-  function buildDetail (args) {
-    const details = args.filter(isDetail)
-    if (details.length === 0) return {}
-    else if (details.length === 1) return {detail: details[0]}
-    else return {details}
-  }
-]
+function attachArgs (singular, plural, args, output) {
+  if (args.length === 1) output[singular] = args[0]
+  else if (args.length > 1) output[plural] = args
+}
 
 function formatError (err) {
   return Object.assign({
@@ -70,20 +66,6 @@ function addTrace (output) {
 
 function trim (str) {
   return str.trim()
-}
-
-function isMessage (arg) {
-  return !isError(arg) && !isDetail(arg)
-}
-
-function isError (arg) {
-  return arg instanceof Error
-}
-
-function isDetail (arg) {
-  return typeof arg === 'object'
-    && arg !== null
-    && !isError(arg)
 }
 
 function emptyFunc () {}
