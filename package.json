@@ -1,6 +1,6 @@
 {
   "name": "simple-json-logger",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "simple json logger",
   "main": "index.js",
   "keywords": [
@@ -11,6 +11,7 @@
   "repository": "https://github.com/zhaoyao91/simple-json-logger.git",
   "license": "MIT",
   "dependencies": {
-    "circular-json": "^0.5.1"
+    "circular-json": "^0.5.1",
+    "clean-options": "^1.0.0"
   }
 }

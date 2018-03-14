@@ -1,4 +1,6 @@
 const circularJSON = require('circular-json')
+const clean = require('clean-options')
+
 const stdout = console.log.bind(console)
 const stderr = console.error.bind(console)
 
@@ -28,9 +30,9 @@ Object.assign(buildLogger, buildLogger())
 
 module.exports = buildLogger
 
-function buildLogFunc (options = {}) {
+function buildLogFunc (options) {
   const {
-    level = 30,
+    level,
     log,
     modifyOutput = emptyFunc,
     meta,
@@ -38,7 +40,7 @@ function buildLogFunc (options = {}) {
     printPretty = false,
     logTimestamp = false,
     formatTimestamp = id,
-  } = options
+  } = clean(options)
 
   if (level < printLevel) return emptyFunc
 
