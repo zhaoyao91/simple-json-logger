@@ -25,13 +25,38 @@ logger.error(new TypeError('invalid arg'))
 // {"level": 50, "error": {"name": "TypeError", "message": "invalid arg", "stack": ...}}
 ```
 
+You can also build a customized logger:
+
+```
+const buildLogger = require('simple-json-logger')
+
+const logger = buildLogger({meta: {pid: 'xxx'}})
+
+logger.info('hello world')
+// {"pid": "xxx", "level": 30, "message": "hello world"}
+```
+
 ## API
 
-### logger.xxx
+### buildLogger
 
-`xxx` could be anyone of [levels](#levels).
+```
+(Options?) => Logger
 
-`(...args) => void`
+Options ~ {
+  meta: Object?, // fields will be attached to every log item
+  logLevel: Number = process.env.LOG_LEVEL = 30, // only log items with levels equal or greater than this value will be displayed 
+  logPretty: Boolean = process.env.LOG_PRETTY = false, // display log items in pretty format
+}
+```
+
+### Logger
+
+#### $.${level}
+
+`${level}` could be any of [levels](#levels).
+
+`(...args) => Void`
 
 Notes:
 
@@ -57,11 +82,6 @@ Notes:
 - `error`, `warn`, `trace` logs will be output to stderr.
 - `info`, `debug` logs will be output to stdout.
 - `trace` logs have an extra field `trace` which is a string array of the trace stack.
-
-## Env
-
-- LOG_LEVEL - print log only if level >= LOG_LEVEL. default to 30.
-- LOG_PRETTY - if truthy, then print log with pretty format.
 
 ## License
 

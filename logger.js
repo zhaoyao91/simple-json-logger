@@ -8,24 +8,47 @@ const {
 const stdout = console.log.bind(console)
 const stderr = console.error.bind(console)
 
-module.exports = {
-  error: buildLogFunc(50, stderr),
-  warn: buildLogFunc(40, stderr),
-  info: buildLogFunc(30, stdout),
-  log: buildLogFunc(30, stdout),
-  debug: buildLogFunc(20, stdout),
-  trace: buildLogFunc(10, stderr, addTrace)
+function buildLogger (options = {}) {
+  const {
+    meta,
+    logLevel = Number(LOG_LEVEL),
+    logPretty = Boolean(LOG_PRETTY),
+  } = options
+  return {
+    error: buildLogFunc({level: 50, log: stderr, meta, logLevel, logPretty}),
+    warn: buildLogFunc({level: 40, log: stderr, meta, logLevel, logPretty}),
+    info: buildLogFunc({level: 30, log: stdout, meta, logLevel, logPretty}),
+    log: buildLogFunc({level: 30, log: stdout, meta, logLevel, logPretty}),
+    debug: buildLogFunc({level: 20, log: stdout, meta, logLevel, logPretty}),
+    trace: buildLogFunc({level: 10, log: stderr, meta, logLevel, logPretty, modifyOutput: addTrace})
+  }
 }
 
-function buildLogFunc (level, log, modifyOutput = emptyFunc) {
-  if (level < LOG_LEVEL) return emptyFunc
+Object.assign(buildLogger, buildLogger())
 
-  const formatOutput = !!LOG_PRETTY
+module.exports = buildLogger
+
+function buildLogFunc (options) {
+  const {
+    level,
+    log,
+    modifyOutput = emptyFunc,
+    meta,
+    logLevel,
+    logPretty,
+  } = options
+
+  if (level < logLevel) return emptyFunc
+
+  const formatOutput = logPretty
     ? (output) => circularJSON.stringify(output, null, 2)
     : (output) => circularJSON.stringify(output)
 
   return function (...args) {
-    const output = {level}
+    const output = {
+      ...meta,
+      level
+    }
 
     const [errors, messages, details] = classifyArgs(args)
 
