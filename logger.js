@@ -1,26 +1,26 @@
 const circularJSON = require('circular-json')
-
-const {
-  LOG_LEVEL = '30',
-  LOG_PRETTY,
-} = process.env
-
 const stdout = console.log.bind(console)
 const stderr = console.error.bind(console)
 
-function buildLogger (options = {}) {
-  const {
-    meta,
-    logLevel = Number(LOG_LEVEL),
-    logPretty = Boolean(LOG_PRETTY),
-  } = options
+/**
+ * (Options?) => Logger
+ *
+ * Options ~ {
+ *   meta: Object?,
+ *   printLevel: Number = 30,
+ *   printPretty: Boolean = false,
+ *   logTimestamp: Boolean = false,
+ *   formatTimestamp?: (ts: Number) => Any,
+ * }
+ */
+function buildLogger (options) {
   return {
-    error: buildLogFunc({level: 50, log: stderr, meta, logLevel, logPretty}),
-    warn: buildLogFunc({level: 40, log: stderr, meta, logLevel, logPretty}),
-    info: buildLogFunc({level: 30, log: stdout, meta, logLevel, logPretty}),
-    log: buildLogFunc({level: 30, log: stdout, meta, logLevel, logPretty}),
-    debug: buildLogFunc({level: 20, log: stdout, meta, logLevel, logPretty}),
-    trace: buildLogFunc({level: 10, log: stderr, meta, logLevel, logPretty, modifyOutput: addTrace})
+    error: buildLogFunc({...options, level: 50, log: stderr}),
+    warn: buildLogFunc({...options, level: 40, log: stderr}),
+    info: buildLogFunc({...options, level: 30, log: stdout}),
+    log: buildLogFunc({...options, level: 30, log: stdout}),
+    debug: buildLogFunc({...options, level: 20, log: stdout}),
+    trace: buildLogFunc({...options, level: 10, log: stderr, modifyOutput: addTrace})
   }
 }
 
@@ -28,25 +28,32 @@ Object.assign(buildLogger, buildLogger())
 
 module.exports = buildLogger
 
-function buildLogFunc (options) {
+function buildLogFunc (options = {}) {
   const {
-    level,
+    level = 30,
     log,
     modifyOutput = emptyFunc,
     meta,
-    logLevel,
-    logPretty,
+    printLevel = 30,
+    printPretty = false,
+    logTimestamp = false,
+    formatTimestamp = id,
   } = options
 
-  if (level < logLevel) return emptyFunc
+  if (level < printLevel) return emptyFunc
 
-  const formatOutput = logPretty
+  const formatOutput = printPretty
     ? (output) => circularJSON.stringify(output, null, 2)
     : (output) => circularJSON.stringify(output)
+
+  const generateTimestamp = logTimestamp
+    ? () => formatTimestamp(getTimestamp())
+    : emptyFunc
 
   return function (...args) {
     const output = {
       ...meta,
+      timestamp: generateTimestamp(),
       level
     }
 
@@ -96,3 +103,11 @@ function trim (str) {
 }
 
 function emptyFunc () {}
+
+function id (x) {
+  return x
+}
+
+function getTimestamp () {
+  return (new Date()).getTime()
+}

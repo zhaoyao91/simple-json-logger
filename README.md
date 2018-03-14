@@ -44,9 +44,11 @@ logger.info('hello world')
 (Options?) => Logger
 
 Options ~ {
-  meta: Object?, // fields will be attached to every log item
-  logLevel: Number = process.env.LOG_LEVEL = 30, // only log items with levels equal or greater than this value will be displayed 
-  logPretty: Boolean = process.env.LOG_PRETTY = false, // display log items in pretty format
+  meta: Object?,
+  printLevel: Number = 30,
+  printPretty: Boolean = false,
+  logTimestamp: Boolean = false,
+  formatTimestamp?: (Number) => Any,
 }
 ```
 
