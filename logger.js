@@ -1,5 +1,6 @@
 const circularJSON = require('circular-json')
 const clean = require('clean-options')
+const defaultsDeep = require('lodash.defaultsdeep')
 
 const stdout = console.log.bind(console)
 const stderr = console.error.bind(console)
@@ -15,7 +16,7 @@ const stderr = console.error.bind(console)
  *   formatTimestamp?: (ts: Number) => Any,
  * }
  */
-function buildLogger (options) {
+function buildLoggerObject (options) {
   return {
     error: buildLogFunc({...options, level: 50, log: stderr}),
     warn: buildLogFunc({...options, level: 40, log: stderr}),
@@ -26,9 +27,19 @@ function buildLogger (options) {
   }
 }
 
-Object.assign(buildLogger, buildLogger())
+function buildLogger (options) {
+  function anotherBuildLogger (innerOptions) {
+    const outerOptions = options
+    const finalOptions = defaultsDeep(innerOptions, outerOptions)
+    return buildLogger(finalOptions)
+  }
 
-module.exports = buildLogger
+  const logger = buildLoggerObject(options)
+  Object.assign(anotherBuildLogger, logger)
+  return anotherBuildLogger
+}
+
+module.exports = buildLogger()
 
 function buildLogFunc (options) {
   const {

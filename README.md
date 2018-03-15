@@ -38,7 +38,11 @@ logger.info('hello world')
 
 ## API
 
-### buildLogger
+### Logger
+
+A logger object is also a logger builder.
+
+The child logger will inherent options deeply from its parent logger.
 
 ```
 (Options?) => Logger
@@ -51,8 +55,6 @@ Options ~ {
   formatTimestamp?: (Number) => Any,
 }
 ```
-
-### Logger
 
 #### $.${level}
 
