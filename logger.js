@@ -39,6 +39,15 @@ function buildLogger (options) {
   return anotherBuildLogger
 }
 
+/**
+ * @type {object | function}
+ * @property {function} error
+ * @property {function} warn
+ * @property {function} info
+ * @property {function} log
+ * @property {function} debug
+ * @property {function} trace
+ */
 module.exports = buildLogger()
 
 function buildLogFunc (options) {
