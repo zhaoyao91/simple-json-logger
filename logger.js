@@ -112,7 +112,7 @@ function formatError (err) {
     ...err,
     name: err.name,
     message: err.message,
-    stack: err.stack.split('\n').map(trim),
+    stack: err.stack.split('\n').slice(1).map(trim),
   }
 }
 
