@@ -1,83 +1,63 @@
 const circularJSON = require('circular-json')
-const clean = require('clean-options')
 const defaultsDeep = require('lodash.defaultsdeep')
 
-const stdout = console.log.bind(console)
+const stdout = console.info.bind(console)
 const stderr = console.error.bind(console)
 
-/**
- * (Options?) => Logger
- *
- * Options ~ {
- *   meta: Object?,
- *   printLevel: Number = 30,
- *   printPretty: Boolean = false,
- *   logTimestamp: Boolean = false,
- *   formatTimestamp?: (ts: Number) => Any,
- * }
- */
-function buildLoggerObject (options) {
-  return {
-    error: buildLogFunc({...options, level: 50, log: stderr}),
-    warn: buildLogFunc({...options, level: 40, log: stderr}),
-    info: buildLogFunc({...options, level: 30, log: stdout}),
-    log: buildLogFunc({...options, level: 30, log: stdout}),
-    debug: buildLogFunc({...options, level: 20, log: stdout}),
-    trace: buildLogFunc({...options, level: 10, log: stderr, modifyOutput: addTrace})
+class Logger {
+  constructor (options) {
+    options = defaultsDeep({}, options, {
+      printLevel: 30,
+      printPretty: false,
+      logTimestamp: false,
+      logTrace: false,
+      logPosition: false,
+      meta: null,
+    })
+
+    this.options = options
+
+    this.verbase = buildLogMethod(10, stdout, options)
+    this.debug = buildLogMethod(20, stdout, options)
+    this.info = buildLogMethod(30, stdout, options)
+    this.log = buildLogMethod(30, stdout, options)
+    this.warn = buildLogMethod(40, stderr, options)
+    this.error = buildLogMethod(50, stderr, options)
+    this.fatal = buildLogMethod(60, stderr, options)
+  }
+
+  clone() {
+    return new Logger(this.options)
   }
 }
 
-function buildLogger (options) {
-  function anotherBuildLogger (innerOptions) {
-    const outerOptions = options
-    const finalOptions = defaultsDeep(innerOptions, outerOptions)
-    return buildLogger(finalOptions)
-  }
+module.exports = Logger
 
-  const logger = buildLoggerObject(options)
-  Object.assign(anotherBuildLogger, logger)
-  return anotherBuildLogger
-}
-
-/**
- * @type {object | function}
- * @property {function} error
- * @property {function} warn
- * @property {function} info
- * @property {function} log
- * @property {function} debug
- * @property {function} trace
- */
-module.exports = buildLogger()
-
-function buildLogFunc (options) {
-  const {
-    level,
-    log,
-    modifyOutput = emptyFunc,
-    meta,
-    printLevel = 30,
-    printPretty = false,
-    logTimestamp = false,
-    formatTimestamp = id,
-  } = clean(options)
-
-  if (level < printLevel) return emptyFunc
-
-  const formatOutput = printPretty
-    ? (output) => circularJSON.stringify(output, null, 2)
-    : (output) => circularJSON.stringify(output)
-
-  const generateTimestamp = logTimestamp
-    ? () => formatTimestamp(getTimestamp())
-    : emptyFunc
-
+function buildLogMethod (level, stream, options) {
   return function (...args) {
-    const output = {
-      ...meta,
-      timestamp: generateTimestamp(),
-      level
+    // parse options in log function so it can be modified at runtime
+    const {
+      printLevel,
+      printPretty,
+      logTimestamp,
+      logTrace,
+      logPosition,
+      meta,
+    } = options
+
+    if (level < printLevel) return
+
+    let output = {
+      level: level
     }
+
+    if (logTimestamp) output.timestamp = Date.now()
+
+    if (logTrace) addTrace(output)
+
+    if (logPosition) addPosition(output)
+
+    if (meta) Object.assign(output, meta)
 
     const [errors, messages, details] = classifyArgs(args)
 
@@ -85,9 +65,10 @@ function buildLogFunc (options) {
     attachArgs('message', 'messages', messages, output)
     attachArgs('detail', 'details', details, output)
 
-    modifyOutput(output)
+    if (printPretty) output = circularJSON.stringify(output, null, 2)
+    else output = circularJSON.stringify(output)
 
-    log(formatOutput(output))
+    stream(output)
   }
 }
 
@@ -120,16 +101,17 @@ function addTrace (output) {
   output.trace = (new Error()).stack.split('\n').slice(3).map(trim)
 }
 
+function addPosition (output) {
+  const frameLine = (new Error()).stack.split('\n')[3].trim()
+  const frameMatch = frameLine.match(/^at (.+) \((.+):(.+):(.+)\)$/)
+  output.position = {
+    function: frameMatch[1],
+    file: frameMatch[2],
+    line: frameMatch[3],
+    column: frameMatch[4]
+  }
+}
+
 function trim (str) {
   return str.trim()
-}
-
-function emptyFunc () {}
-
-function id (x) {
-  return x
-}
-
-function getTimestamp () {
-  return (new Date()).getTime()
 }

@@ -1,91 +1,82 @@
 # Simple JSON Logger
 
-Simple JSON logger.
+- Easy to use
+- All are JSON
 
-Just convert your logs into JSON format and add necessary fields (in fact, only level). 
+## Install
+
+```
+npm install --save simple-json-logger
+```
 
 ## Usage
 
-Install package:
+### Basic Usage
 
-`npm install --save simple-json-logger`
-
-Import and use:
+You can log any number strings, objects or errors in any order. Logger
+will classify them and put them into right fields.
 
 ```
 const logger = require('simple-json-logger')
 
-logger.log('hello world') 
+logger.log('hello world')
 // {"level": 30, "message": "hello world"}
 
 logger.warn('some user is invalid', {name: 'Bob', age: 20})
 // {"level": 40, "message": "some user is invalid", "detail": {"name": "Bob", "age": 20}}
 
-logger.error(new TypeError('invalid arg'))
-// {"level": 50, "error": {"name": "TypeError", "message": "invalid arg", "stack": ...}}
+logger.error('Something', new TypeError('invalid arg'), 'Wrong!!!')
+// {"level": 50, messages:['Something', 'Wrong!!!'], "error": {"name": "TypeError", "message": "invalid arg", "stack": ...}}
 ```
 
-You can also build a customized logger:
+### Set Options
 
 ```
-const buildLogger = require('simple-json-logger')
+const logger = require('simple-json-logger')
 
-const logger = buildLogger({meta: {pid: 'xxx'}})
+logger.options.printLevel = 40
 
-logger.info('hello world')
-// {"pid": "xxx", "level": 30, "message": "hello world"}
+logger.info('ok') // won't be printed
+
+logger.warn('warning!') // printed
+```
+
+### Clone
+
+```
+const logger = require('simple-json-logger')
+
+logger.options.printPretty = true
+
+const logger2 = logger.clone()
+
+logger2.options.logTimestamp = true
+
+logger.info('hi') // pretty without timestamp
+
+logger2.info('hello') // pretty with timestamp
 ```
 
 ## API
 
-### Logger
+### Options
 
-A logger object is also a logger builder.
+- printLevel = 30 - Only logs with level equal or greater than this will be printed
+- printPretty = false - Print logs with pretty format
+- logTimestamp = false - Add 'timestamp' to every logs
+- logTrace = false - Add 'trace' to every logs. Only for development
+- logPosition = false - Add 'position' to every logs. Only for development
+- meta = null - Object that will be merged into every logs. User should be careful to not to override the builtin fields
 
-The child logger will inherent options deeply from its parent logger.
+### Levels
 
-```
-(Options?) => Logger
-
-Options ~ {
-  meta: Object?,
-  printLevel: Number = 30,
-  printPretty: Boolean = false,
-  logTimestamp: Boolean = false,
-  formatTimestamp?: (Number) => Any,
-}
-```
-
-#### $.${level}
-
-`${level}` could be any of [levels](#levels).
-
-`(...args) => Void`
-
-Notes:
-
-- there could be any number or args
-- each arg will be classified either as `error`, `message` or `detail`
-  - if arg is instance of `Error`, then it is treated as `error`
-  - if arg is type of `object` but is not `null`, then it is treated as `detail`
-  - otherwise, the arg is treated as `message`
-- for each arg type:
-  - if there is only one arg, it is put in `error`, `message` or `detail` filed
-  - if there are more than one args, they are put in an array of `errors`, `messages` or `details` field
-
-## Levels
-
-- `error` - 50
-- `warn` - 40
-- `info` or `log` - 30
-- `debug` - 20
-- `trace` - 10
-
-Notes:
-
-- `error`, `warn`, `trace` logs will be output to stderr.
-- `info`, `debug` logs will be output to stdout.
-- `trace` logs have an extra field `trace` which is a string array of the trace stack.
+- verbose: 10
+- debug: 20
+- info: 30
+- log: 30
+- warn: 40
+- error: 50
+- fatal: 60
 
 ## License
 
