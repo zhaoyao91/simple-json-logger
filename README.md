@@ -29,7 +29,7 @@ logger.error('Something', new TypeError('invalid arg'), 'Wrong!!!')
 // {"level": 50, messages:['Something', 'Wrong!!!'], "error": {"name": "TypeError", "message": "invalid arg", "stack": ...}}
 ```
 
-### Set Options
+### Set Options via Code
 
 ```
 const logger = require('simple-json-logger')
@@ -39,6 +39,25 @@ logger.options.printLevel = 40
 logger.info('ok') // won't be printed
 
 logger.warn('warning!') // printed
+```
+
+### Set Options via Env
+
+Set env variables:
+
+```
+export LOG_PRINT_LEVEL=40
+export LOG_PRINT_PRETTY=true
+```
+
+Using default logger:
+
+```
+const logger = require('simple-json-logger')
+
+logger.info('ok') // won't be printed
+
+logger.warn('warning!') // printed with pretty
 ```
 
 ### Clone
@@ -61,11 +80,11 @@ logger2.info('hello') // pretty with timestamp
 
 ### Options
 
-- printLevel = 30 - Only logs with level equal or greater than this will be printed
-- printPretty = false - Print logs with pretty format
-- logTimestamp = false - Add 'timestamp' to every logs
-- logTrace = false - Add 'trace' to every logs. Only for development
-- logPosition = false - Add 'position' to every logs. Only for development
+- (LOG_PRINT_LEVEL) printLevel = 30 - Only logs with level equal or greater than this will be printed
+- (LOG_PRINT_PRETTY) printPretty = false - Print logs with pretty format
+- (LOG_TIMESTAMP) logTimestamp = false - Add 'timestamp' to every logs
+- (LOG_TRACE) logTrace = false - Add 'trace' to every logs. Only for development
+- (LOG_POSITION) logPosition = false - Add 'position' to every logs. Only for development
 - meta = null - Object that will be merged into every logs. User should be careful to not to override the builtin fields
 
 ### Levels
