@@ -1,5 +1,5 @@
-const circularJSON = require('circular-json')
 const defaultsDeep = require('lodash.defaultsdeep')
+const stringifyJSON = require('safe-stable-stringify')
 
 const stdout = console.info.bind(console)
 const stderr = console.error.bind(console)
@@ -65,8 +65,8 @@ function buildLogMethod (level, stream, options) {
     attachArgs('message', 'messages', messages, output)
     attachArgs('detail', 'details', details, output)
 
-    if (printPretty) output = circularJSON.stringify(output, null, 2)
-    else output = circularJSON.stringify(output)
+    if (printPretty) output = stringifyJSON(output, null, 2)
+    else output = stringifyJSON(output)
 
     stream(output)
   }
