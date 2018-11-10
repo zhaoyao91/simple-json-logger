@@ -1,5 +1,7 @@
 const defaultsDeep = require('lodash.defaultsdeep')
 
+const defaultJSONStringifier = require('./default-json-stringifier')
+
 const stdout = console.info.bind(console)
 const stderr = console.error.bind(console)
 
@@ -115,14 +117,4 @@ function addPosition (output) {
 
 function trim (str) {
   return str.trim()
-}
-
-const defaultJSONStringifier = {
-  normal(target) {
-    return JSON.stringify(target)
-  },
-
-  pretty(target) {
-    return JSON.stringify(target, null, 2)
-  }
 }
