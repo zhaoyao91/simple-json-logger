@@ -1,5 +1,4 @@
 const defaultsDeep = require('lodash.defaultsdeep')
-const stringifyJSON = require('safe-stable-stringify')
 
 const stdout = console.info.bind(console)
 const stderr = console.error.bind(console)
@@ -13,6 +12,7 @@ class Logger {
       logTrace: false,
       logPosition: false,
       meta: null,
+      jsonStringifier: defaultJSONStringifier
     })
 
     this.options = options
@@ -43,6 +43,7 @@ function buildLogMethod (level, stream, options) {
       logTrace,
       logPosition,
       meta,
+      jsonStringifier
     } = options
 
     if (level < printLevel) return
@@ -65,8 +66,8 @@ function buildLogMethod (level, stream, options) {
 
     if (meta) Object.assign(output, meta)
 
-    if (printPretty) output = stringifyJSON(output, null, 2)
-    else output = stringifyJSON(output)
+    if (printPretty) output = jsonStringifier.pretty(output)
+    else output = jsonStringifier.normal(output)
 
     stream(output)
   }
@@ -114,4 +115,14 @@ function addPosition (output) {
 
 function trim (str) {
   return str.trim()
+}
+
+const defaultJSONStringifier = {
+  normal(target) {
+    return JSON.stringify(target)
+  },
+
+  pretty(target) {
+    return JSON.stringify(target, null, 2)
+  }
 }

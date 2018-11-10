@@ -11,7 +11,6 @@
   "repository": "https://github.com/zhaoyao91/simple-json-logger.git",
   "license": "MIT",
   "dependencies": {
-    "lodash.defaultsdeep": "^4.6.0",
-    "safe-stable-stringify": "^1.0.1"
+    "lodash.defaultsdeep": "^4.6.0"
   }
 }
