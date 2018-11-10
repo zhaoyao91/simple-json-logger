@@ -53,17 +53,17 @@ function buildLogMethod (level, stream, options) {
 
     if (logTimestamp) output.timestamp = Date.now()
 
-    if (logTrace) addTrace(output)
-
     if (logPosition) addPosition(output)
 
-    if (meta) Object.assign(output, meta)
+    if (logTrace) addTrace(output)
 
     const [errors, messages, details] = classifyArgs(args)
 
-    attachArgs('error', 'errors', errors.map(formatError), output)
     attachArgs('message', 'messages', messages, output)
     attachArgs('detail', 'details', details, output)
+    attachArgs('error', 'errors', errors.map(formatError), output)
+
+    if (meta) Object.assign(output, meta)
 
     if (printPretty) output = stringifyJSON(output, null, 2)
     else output = stringifyJSON(output)
