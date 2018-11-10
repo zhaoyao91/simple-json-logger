@@ -86,7 +86,7 @@ logger2.info('hello') // pretty with timestamp
 - (LOG_TRACE) logTrace = false - Add 'trace' to every logs. Only for development
 - (LOG_POSITION) logPosition = false - Add 'position' to every logs. Only for development
 - meta = null - Object that will be merged into every logs. User should be careful to not to override the builtin fields
-- jsonStringifier
+- jsonStringifier - Help stringify the output object. See [default-json-stringifier.js](./default-json-stringifier.js)
 
 ### Levels
 
