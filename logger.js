@@ -60,13 +60,13 @@ function buildLogMethod (level, stream, options) {
 
     if (logTrace) addTrace(output)
 
+    if (meta) Object.assign(output, meta)
+
     const [errors, messages, details] = classifyArgs(args)
 
     attachArgs('message', 'messages', messages, output)
     attachArgs('detail', 'details', details, output)
     attachArgs('error', 'errors', errors.map(formatError), output)
-
-    if (meta) Object.assign(output, meta)
 
     if (printPretty) output = jsonStringifier.pretty(output)
     else output = jsonStringifier.normal(output)
