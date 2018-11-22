@@ -1,9 +1,11 @@
+const stringify = require('fast-safe-stringify')
+
 module.exports = {
   normal(target) {
-    return JSON.stringify(target)
+    return stringify(target)
   },
 
   pretty(target) {
-    return JSON.stringify(target, null, 2)
+    return stringify(target, null, 2)
   }
 }

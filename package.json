@@ -1,6 +1,6 @@
 {
   "name": "simple-json-logger",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "simple json logger",
   "main": "index.js",
   "keywords": [
@@ -11,6 +11,7 @@
   "repository": "https://github.com/zhaoyao91/simple-json-logger.git",
   "license": "MIT",
   "dependencies": {
+    "fast-safe-stringify": "^2.0.6",
     "lodash.defaultsdeep": "^4.6.0"
   }
 }
